@@ -1,0 +1,30 @@
+# F-strings with specific alignment formatting
+# > means Right-align {:>10}
+# < means Left-align {:<10}
+# ^ means Center-align	{:^10}
+# .2f	means 2 decimal places	3.14
+# .2e	means Scientific notation	3.14e+00
+
+print(f'{"Model Coefficients":>9}')
+for col, coef in zip(X.columns, lm.coef_):
+    print(f'{col:>9}: {coef:>6.3f}')
+print(f'\nR^2: {lm.score(X,y):.4}')
+
+
+# -------------- In the Terminal (Window) ------------------
+# Install Python packages
+## Create the environment
+python -m venv .venv
+
+## Activate it: (Not sure about it)
+## Windows (PowerShell): 
+.venv\Scripts\Activate.ps1
+
+## Install your libraries
+pip install pandas numpy matplotlib jupyter
+
+# Virtual environment
+## Activate it: (Not sure about it)
+.venv\Scripts\Activate.ps1
+# Deactivate
+deactivate
