@@ -1,0 +1,9 @@
+# In the Terminal
+# Useful Commands to Know
+# Some handy commands once you're up and running:
+
+claude — launch # Claude Code
+claude --doctor # — run diagnostics
+claude --continue # — continue a previous session
+/help # — view all available commands
+/exit # — leave Claude Code

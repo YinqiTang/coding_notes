@@ -34,3 +34,235 @@ pip freeze > requirements.txt
 .venv\Scripts\Activate.ps1
 # Deactivate
 deactivate
+
+# ---------- In the terminal (Mac) -----------------
+
+# CLI is Command Line Interface
+# For instance
+python upload_discovery.py
+python upload_discovery.py --display load_experiments
+
+# When using uv, you don't have to activate the environment if you don't want to — uv is smart enough to find it for you.
+
+# Creat a virtual environment: 
+python3 -m venv .venv
+
+# Update pip:
+python3 -m pip install --upgrade pip
+
+# Install packages:
+python3 -m pip install numpy pandas
+
+# Activate the virtual environment 
+source .venv/bin/activate
+# Deactivate the virtual environment
+deactivate
+
+
+# ---------------------- standard pip vs uv ------------------------
+Create Venv
+  Standard Pip: python3 -m venv .venv
+  uv Equivalent: uv venv
+ 
+Install Package
+  Standard Pip: pip install requests
+  uv Equivalent: uv pip install requests
+ 
+Install from File
+  Standard Pip: pip install -r requirements.txt
+  uv Equivalent: uv pip install -r requirements.txt
+
+# ---------------------- alembic package ------------------------
+# Good practices:
+## Check if the local database syncs with the production database
+uv run alembic current --check-heads 
+
+## If not, do something
+uv run db-upgrade
+
+## If it does not work, click "drop(force)" for the local database in pgAdmin, then
+uv run copy-data -d 
+# OR uv run copy-data
+
+
+# There are three types of databases in our system
+# Production: real one
+# Development: local one
+# Testing: only for GitHub CI test
+
+uv run db-upgrade # Will upgrade my local database
+
+uv run alembic current --check-heads # Only check my local database
+
+# Logic for the changes:
+# - For data schema: when the branch is merged into the main, the data schema will update in Production
+# - Data upload: manually upload (old)
+
+
+# alembic package for database version control
+## bc359a449fb7 → 6823b8fa9202 (soil) → 195aecdd54f6 (fertilizer) → cf3f6a29bfb9 (greenhouse)
+## Step 1: downgrade to before the soil table
+alembic downgrade bc359a449fb7
+
+## Step 2: upgrade only up to fertilizer tables
+alembic upgrade 195aecdd54f6
+
+## Then modify cf3f6a29bfb9_create_greenhouse_tables.py as needed, and when ready:
+
+## Step 3: run the greenhouse migration
+alembic upgrade head
+
+
+# -------Python codes---------------------
+# Batch # multiple lines of codes in Positron: CMD+/
+
+df.columns # Show all column names
+df.columns.tolist()   # as a plain Python list
+df.dtypes             # column names + their data types
+df.info()             # column names, types, and non-null counts
+df.head()  
+
+
+# Show the data types in all the columns
+strain_df.dtypes
+
+# Save DataFrame into csv file
+strain_df.to_csv('strain_table.csv', index=True)
+
+# Locate certain cell
+.loc[row, col] 
+
+# .loc — selects by label (the actual index/column names)
+df.loc[10] 
+
+# .iloc — selects by integer position (0, 1, 2, ... regardless of what the labels are)
+df.iloc[0]
+
+# use .eq() to assign TRUE or FALSE
+# We can also use | & for multiple conditions
+df["has_colony"] = df["colony"].eq("+")
+
+# Build a data frame
+# The pattern: pd.DataFrame(list_of_dicts) — each dict becomes one row, dict keys become column names.
+import pandas as pd
+
+summary_df = pd.DataFrame(
+    [
+        {
+            "measure": "Math test",
+            "passed": 2,
+            "failed": 2,
+        },
+        {
+            "measure": "Science test",
+            "passed": 3,
+            "failed": 1,
+        },
+    ]
+)
+print(summary_df)
+#         measure  passed  failed
+# 0     Math test       2       2
+# 1  Science test       3       1
+
+
+# Make a map -----
+import pandas as pd
+import matplotlib.pyplot as plt
+import geopandas as gpd
+# Count strains per country
+counts = strain_df['isolation_country'].value_counts(dropna=False).reset_index()
+counts.columns = ['isolation_country', 'count']
+counts['isolation_country'] = counts['isolation_country'].fillna('Unknown')
+
+# Load world map
+url = "https://naturalearth.s3.amazonaws.com/110m_cultural/ne_110m_admin_0_countries.zip"
+world = gpd.read_file(url)
+
+# Check available country name columns (run this once to verify)
+# print(world.columns.tolist())
+
+# Merge world map with strain counts using 'NAME' column
+world = world.merge(counts, how='left', left_on='NAME', right_on='isolation_country')
+
+# Plot
+fig, ax = plt.subplots(figsize=(14, 7))
+
+# Base map (all countries in light grey)
+world.plot(ax=ax, color='#f0f0f0', edgecolor='#cccccc', linewidth=0.5)
+
+# Highlighted countries (with strain data)
+world[world['count'].notna()].plot(
+    ax=ax, column='count',
+    cmap='YlOrRd',
+    edgecolor='#333333', linewidth=0.5,
+    legend=True,
+    legend_kwds={'label': 'Number of Strains', 'shrink': 0.5}
+)
+
+# Add country name labels on highlighted countries
+for _, row in world[world['count'].notna()].iterrows():
+    ax.text(row.geometry.centroid.x, row.geometry.centroid.y,
+            f"{row['NAME']}\n({int(row['count'])})",
+            fontsize=8, ha='center', color='#222')
+
+ax.set_title('Distribution of Strains by Isolation Country',
+             fontsize=15, fontweight='bold', pad=15)
+ax.axis('off')
+
+plt.tight_layout()
+# plt.savefig('strain_map.png', dpi=150, bbox_inches='tight')
+plt.show()
+
+# __dir__() is a built-in Python method that returns a list of everything attached to
+# an object — its methods, properties, and internal Python attributes.
+
+data_loader.__dir__()
+
+
+# Return a specific file name or path
+from pathlib import Path
+
+entry_file = Path('my_file/document/report.xlsx')
+
+entry_file.stem      # → 'report'
+entry_file.name      # → 'report.xlsx'
+entry_file.suffix    # → '.xlsx'
+entry_file.parent    # → 'my_file/document'
+
+
+df.columns = df.columns.str.lower()        # lower capitilized letters
+df.columns = df.columns.str.upper()        # → ID, VALUE, SALES
+df.columns = df.columns.str.strip()        # remove leading/trailing spaces
+df.columns = df.columns.str.replace(' ', '_')  # replace spaces with _
+df.columns = df.columns.str.lower().str.replace(' ', '_')  # combine both
+
+# ----- Define function and class -----
+# Regular function — no self
+def bark(name):
+    print(f"{name} says Woof!")
+
+# Class method — uses self
+class Dog:
+    def __init__(self, name, age):  # called when creating the object
+        self.name = name            # store 'name' in the object
+        self.age = age              # store 'age' in the object
+
+    def bark(self):
+        print(f"{self.name} says Woof!")
+
+    def get_age(self):
+        return self.age
+
+dog1 = Dog('Rex', 3)
+dog2 = Dog('Buddy', 5)
+
+dog1.bark()   # → Rex says Woof!
+dog2.bark()   # → Buddy says Woof!
+
+
+# ---------In biofertilizer repo-------------------------
+## Install Python packages, no need to activate the virtual env
+uv add new_package_name 
+
+
