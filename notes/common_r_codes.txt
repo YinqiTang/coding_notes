@@ -1,0 +1,5 @@
+# renv environment
+install.packages("renv")
+renv::init()
+renv::install()
+renv::snapshot()

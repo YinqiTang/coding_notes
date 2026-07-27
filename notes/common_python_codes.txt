@@ -17,11 +17,17 @@ print(f'\nR^2: {lm.score(X,y):.4}')
 python -m venv .venv
 
 ## Activate it: (Not sure about it)
+## For the first time
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
 ## Windows (PowerShell): 
 .venv\Scripts\Activate.ps1
 
 ## Install your libraries
 pip install pandas numpy matplotlib jupyter
+
+## Write down the package version if there is requirements.txt in a package
+pip freeze > requirements.txt
 
 # Virtual environment
 ## Activate it: (Not sure about it)
