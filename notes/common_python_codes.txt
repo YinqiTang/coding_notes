@@ -11,7 +11,7 @@ for col, coef in zip(X.columns, lm.coef_):
 print(f'\nR^2: {lm.score(X,y):.4}')
 
 
-# -------------- In the Terminal (Window) ------------------
+# -------------- In the Terminal (Windows) ------------------
 # Install Python packages
 ## Create the environment
 python -m venv .venv
@@ -72,6 +72,14 @@ Install from File
   Standard Pip: pip install -r requirements.txt
   uv Equivalent: uv pip install -r requirements.txt
 
+
+# ------ in our repo ----
+uv add <package_name>
+uv sync
+uv sync -P <package_name>
+uv remove <package_name>
+
+
 # ---------------------- alembic package ------------------------
 # Good practices:
 ## Check if the local database syncs with the production database
@@ -113,7 +121,28 @@ alembic upgrade 195aecdd54f6
 alembic upgrade head
 
 
-# -------Python codes---------------------
+# ---------- Python codes ---------------------
+## ---- Excel----
+import pandas as pd
+df = pd.read_excel("file_name.xlsx")
+
+# Read Excel values
+import openpyxl
+FILE_PATH = "file_name.xlsx"
+SHEET_NAME = "sheetname"
+
+wb = openpyxl.load_workbook(FILE_PATH, data_only=True)
+ws = wb[SHEET_NAME]
+
+ws.cell(row=3, column=1).value
+ws['A2']
+
+
+## Show merged cells
+worksheet.merged_cells.ranges
+
+
+
 # Batch # multiple lines of codes in Positron: CMD+/
 
 df.columns # Show all column names
@@ -142,7 +171,8 @@ df.iloc[0]
 # We can also use | & for multiple conditions
 df["has_colony"] = df["colony"].eq("+")
 
-# Build a data frame
+
+# ---- Data frame stuff----
 # The pattern: pd.DataFrame(list_of_dicts) — each dict becomes one row, dict keys become column names.
 import pandas as pd
 
@@ -166,7 +196,43 @@ print(summary_df)
 # 1  Science test       3       1
 
 
-# Make a map -----
+# Insert new values
+# df.insert(loc, column, value, allow_duplicates=False)
+# Example: insert 101 into the first row in Column ID
+df.insert(0, 'ID', 101)
+
+# Rename some column names
+import pandas as pd
+df = df.rename(columns={'old_colname_1': 'new_colname_1', 'old_colname_2': 'new_colname_2'})
+
+
+# Merge two dfs
+## If the joining cols are the same column name
+df = df.merge(
+    index_df[["project_name, "id"]],
+    on="project_name",
+    how="left",
+)
+
+## If the joining cols are different column names
+df = df.merge(
+        isolate_df[["other_isolate_name", "id"]],
+        left_on="project_isolate_id",
+        right_on="other_isolate_name",
+        how="left",
+    )
+    .drop(columns=["other_isolate_name"])
+
+
+## Reorder and reset index
+df = df.sort_values(by="score", ascending=False)
+# Or
+df = df.sort_values("map_id"])
+
+df = df.reset_index(drop=True)
+
+
+## ---- Make a map -----
 import pandas as pd
 import matplotlib.pyplot as plt
 import geopandas as gpd
@@ -237,7 +303,7 @@ df.columns = df.columns.str.strip()        # remove leading/trailing spaces
 df.columns = df.columns.str.replace(' ', '_')  # replace spaces with _
 df.columns = df.columns.str.lower().str.replace(' ', '_')  # combine both
 
-# ----- Define function and class -----
+## ----- Define function and class -----
 # Regular function — no self
 def bark(name):
     print(f"{name} says Woof!")
@@ -259,6 +325,40 @@ dog2 = Dog('Buddy', 5)
 
 dog1.bark()   # → Rex says Woof!
 dog2.bark()   # → Buddy says Woof!
+
+## ---- Python syntax convention ----
+# The Ternary Operator (If/Else in One Line)
+status = "Pass" if score >= 50 else "Fail"
+
+# Generator Expressions
+total = sum(x**2 for x in range(1, 6))
+
+# Decorators (@decorator)
+## 1. You write this first...
+@my_decorator
+def greet():
+    print("Hello!")
+
+## 2. But under the hood, Python executes it like this AFTER greet is created:
+## greet = my_decorator(greet)
+
+
+# Dictionary Comprehensions
+squares = {x: x * x for x in range(5)}
+
+# List Comprehensions
+numbers = [1, 2, 3, 4, 5]
+even_doubled = [x * 2 for x in numbers if x % 2 == 0]
+
+
+# try ... except ... else Blocks
+try:
+    result = 10 / 2
+except ZeroDivisionError:
+    print("Error occurred!")
+else:
+    # Runs ONLY if the try block succeeded without errors
+    print("Operation successful:", result)
 
 
 # ---------In biofertilizer repo-------------------------

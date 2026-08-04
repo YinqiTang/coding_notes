@@ -3,3 +3,13 @@ install.packages("renv")
 renv::init()
 renv::install()
 renv::snapshot()
+
+# Cleanup column names
+janitor::clean_names()
+
+# ---- dplyr ---------
+mutate()
+rename()
+arrange()
+filter()
+select()
