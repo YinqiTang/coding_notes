@@ -10,6 +10,8 @@ for col, coef in zip(X.columns, lm.coef_):
     print(f'{col:>9}: {coef:>6.3f}')
 print(f'\nR^2: {lm.score(X,y):.4}')
 
+Python's numeric underscores (1_000_000)
+Scientific Notation: 1e6, 1e7
 
 # -------------- In the Terminal (Windows) ------------------
 # Install Python packages
@@ -72,6 +74,10 @@ Install from File
   Standard Pip: pip install -r requirements.txt
   uv Equivalent: uv pip install -r requirements.txt
 
+Record package versions
+pip freeze > requirements.txt
+uv pip freeze > requirements.txt
+
 
 # ------ in our repo ----
 uv add <package_name>
@@ -121,6 +127,15 @@ alembic upgrade 195aecdd54f6
 alembic upgrade head
 
 
+## Check the ID of the latest revision
+uv run alembic heads
+
+## Check whether your latest revision matches the one in the database
+uv run alembic current --check-heads
+
+## Check the history of all revisions
+uv run alembic history
+
 # ---------- Python codes ---------------------
 ## ---- Excel----
 import pandas as pd
@@ -143,39 +158,12 @@ worksheet.merged_cells.ranges
 
 
 
-# Batch # multiple lines of codes in Positron: CMD+/
-
-df.columns # Show all column names
-df.columns.tolist()   # as a plain Python list
-df.dtypes             # column names + their data types
-df.info()             # column names, types, and non-null counts
-df.head()  
-
-
-# Show the data types in all the columns
-strain_df.dtypes
-
-# Save DataFrame into csv file
-strain_df.to_csv('strain_table.csv', index=True)
-
-# Locate certain cell
-.loc[row, col] 
-
-# .loc — selects by label (the actual index/column names)
-df.loc[10] 
-
-# .iloc — selects by integer position (0, 1, 2, ... regardless of what the labels are)
-df.iloc[0]
-
-# use .eq() to assign TRUE or FALSE
-# We can also use | & for multiple conditions
-df["has_colony"] = df["colony"].eq("+")
-
-
 # ---- Data frame stuff----
 # The pattern: pd.DataFrame(list_of_dicts) — each dict becomes one row, dict keys become column names.
 import pandas as pd
 
+# Build data frame
+## Method 1: 
 summary_df = pd.DataFrame(
     [
         {
@@ -194,6 +182,18 @@ print(summary_df)
 #         measure  passed  failed
 # 0     Math test       2       2
 # 1  Science test       3       1
+
+## Method 2:
+data = {
+    "strain_id": ["STR-001", "STR-002", "STR-003"],
+    "starch_type": ["Corn", "Wheat", "Cassava"],
+    "yield_pct": [88.5, 91.2, 85.0],
+}
+
+# Build DataFrame
+df = pd.DataFrame(data)
+
+
 
 
 # Insert new values
@@ -223,13 +223,200 @@ df = df.merge(
     )
     .drop(columns=["other_isolate_name"])
 
+## # Assign every df_2 row to every df_1 row
+cross_df = pd.merge(df_1, df_2, how="cross")
 
 ## Reorder and reset index
 df = df.sort_values(by="score", ascending=False)
 # Or
-df = df.sort_values("map_id"])
+df = df.sort_values(["map_id"])
 
 df = df.reset_index(drop=True)
+
+
+## Reorder columns
+### Specify the exact order you want
+new_order = ["a", "b", "c"]
+df = df[new_order]
+
+### Move 'id' to index 0, keeping all other columns in their original order
+first_col = "id"
+other_cols = [col for col in df.columns if col != first_col]
+
+df = df[[first_col] + other_cols]
+
+### Move two columns to index 0, keeping all other columns in their original order
+first_cols = ["value", "yield_pct"]
+other_cols = [col for col in df.columns if col not in first_cols]
+
+df = df[first_cols + other_cols]
+
+### Extract B_ columns first, then A_ columns
+b_cols = [col for col in df.columns if col.startswith("B_")]
+a_cols = [col for col in df.columns if col.startswith("A_")]
+
+df = df[a_cols + a_cols]
+
+## Map out new values
+import pandas as pd
+
+data = {
+    "strain_id": ["STR-001", "STR-001", "STR-001", "STR-003"],
+    "starch_type": ["Corn", "Wheat", "Wheat", "Cassava"],
+}
+df = pd.DataFrame(data)
+
+### Map one column
+starch_mapping = {
+    "Corn": 10,
+    "Wheat": 20,
+    "Cassava": 5,
+}
+
+df["new_value"] = df["starch_type"].map(starch_mapping)
+
+### Map multiple columns
+mapping = {
+    ("STR-001", "Corn"): 10,
+    ("STR-001", "Wheat"): 20,
+    ("STR-003", "Cassava"): 5,
+}
+
+df["new_value"] = [
+    mapping.get(key, None)
+    for key in zip(df["strain_id"], df["starch_type"])
+]
+
+print(df)
+
+
+## Filter specific rows
+### Filter for rows where strain_id is "STR-001"
+filtered_df = df[df["strain_id"] == "STR-001"]
+
+### Filter for rows where strain_id is not "STR-001"
+filtered_df = df[df["strain_id"] != "STR-001"]
+
+
+### Filter rows based on multiple criteria
+filtered_df = df[(df["strain_id"] == "STR-001") & (df["starch_type"] == "Wheat")]
+
+filtered_df = df[
+    (df["status"].isin(["Active", "Unknow"])) & 
+    ((df["starch_type"] == "Corn") | (df["yield_pct"] > 90.0))
+]
+
+#### Keep rows where status is NOT in the list
+filtered_df = df[~df["status"].isin(["Active", "Unknow"])]
+
+
+df.query("strain_id == 'STR-001' and starch_type == 'Wheat'")
+
+filtered_data = data.query(
+    "country == 'DK' and "
+    "location == 'Copenhagen' and "
+    "crop_type == 'maize'"
+)
+
+
+### Drop rows where 'strain_id' is NaN
+filtered_df = df.dropna(subset=["strain_id"])
+
+### Drop duplicated rows like distinct() in R
+distinct_df = df.drop_duplicates()
+
+
+# Batch # multiple lines of codes in Positron: CMD+/
+
+df.columns # Show all column names
+df.columns.tolist()   # as a plain Python list
+df.dtypes             # column names + their data types
+df.info()             # column names, types, and non-null counts
+df.head()  
+df["strain_id"].unique()
+
+# Show the data types in all the columns
+strain_df.dtypes
+
+# Save DataFrame into csv file
+strain_df.to_csv('strain_table.csv', index=True)
+
+# Locate certain cell
+.loc[row, col] 
+
+# .loc — selects by label (the actual index/column names)
+df.loc[10] 
+
+# .iloc — selects by integer position (0, 1, 2, ... regardless of what the labels are)
+# Return a series
+df.iloc[0] 
+
+# Return a data frame
+df.head(1)
+
+# Select rows where column 'A' is NaN
+missing_a_df = df[df["A"].isna()]
+
+# use .eq() to assign TRUE or FALSE
+# We can also use | & for multiple conditions
+df["has_money"] = df["money"].eq("+")
+
+## A Pandas method used to loop through a DataFrame row by row. It returns an iterator yielding the index and the row data (as a Pandas Series).
+locations.iterrows()
+
+## Split by "-" and assign to two new columns
+df = pd.DataFrame({
+    "strain_id": ["STR-001", "STR-002"],
+    "starch_type": ["Corn", "Wheat"]
+})
+df[["strain_prefix", "strain_number"]] = df["strain_id"].str.split("-", expand=True)
+
+
+## ----- Statistics --------------
+# creates a random number generator object in NumPy, initialized with a seed of 42
+RNG = np.random.default_rng(42)
+
+# Generates a single random number from a normal (bell curve) distribution:
+# RNG used NumPy's modern Generator object (e.g., RNG = np.random.default_rng()), which is #faster and statistically superior to the older np.random.normal() function.
+RNG.normal(mean_value, sd)
+
+# Generates a single random number from a Uniform Distribution (flat probability)
+# Every number in that range has an equal chance of being picked
+RNG.uniform(min_value, max_value)
+
+# Randomly pick elements from a list, array or sequence
+RNG.choice(a, size=None, replace=True, p=None)
+strains = ["STR-A", "STR-B", "STR-C", "STR-D"]
+chosen = RNG.choice(strains)
+
+
+# Make summary tables
+df_summary = (
+    df.groupby(["country"])[
+        ["value", "uncertainty", "combined_value"]
+    ]
+    .mean()
+    .sort_values(by="mean", ascending=False)
+    .reset_index()
+)
+
+df_summary = (
+    df.groupby("Treatment")["Symptom_Area_Pct"]
+    .agg(mean="mean", std="std", n="count")
+)
+
+## ---- define functions ---------
+# Define default values in argument
+def process_data(file_path: str, batch_size: int = 100):
+    pass
+
+## Beware of Mutable Defaults (Lists, Dicts, DataFrames)
+def add_item(item, item_list: list | None = None):
+    if item_list is None:
+        item_list = []  # Creates a fresh list every time
+    item_list.append(item)
+    return item_list
+
 
 
 ## ---- Make a map -----
@@ -360,9 +547,33 @@ else:
     # Runs ONLY if the try block succeeded without errors
     print("Operation successful:", result)
 
+# ------------ Data validation -------------------------
+# Data validation test
+assert set({"Field_A", "Field_B"}) <= set({"Field_A", "Field_B", "Field_C"}) # True
+assert set({"Field_A", "Field_C"}) <= set({"Field_A", "Field_B", "Field_C"}) # False
+
+# set(field_data["location_name"]): 
+# Converts them into a Python Set, which strips out duplicates and keeps only unique location names
+
+
+
 
 # ---------In biofertilizer repo-------------------------
 ## Install Python packages, no need to activate the virtual env
 uv add new_package_name 
+
+
+# --------- autoML h2o ----------------------------------
+# Result file: a binary model object
+import h2o
+h2o.init()
+
+loaded_model = h2o.load_model(model_path)  # the path printed by the save cell
+loaded_model.predict(some_h2o_frame)       # use it on new data
+
+
+
+
+
 
 
