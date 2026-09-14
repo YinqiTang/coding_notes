@@ -21,7 +21,8 @@ Common Python snippets — formatting, environments, pandas, and syntax conventi
 
 ---
 
-## String Formatting
+## Basic
+### String Formatting
 
 F-strings with alignment formatting:
 
@@ -47,6 +48,20 @@ Other numeric formatting:
 # Scientific notation
 1e6, 1e7
 ```
+
+Make file path
+```python
+# Method 1:
+from pathlib import Path
+## Combine strings using the / operator
+full_path = Path(folder_1) / folder_2 / file_name
+
+# Method 2:
+import os # Pass all the strings as arguments
+full_path = os.path.join(folder_1, folder_2, file_name)
+```
+
+
 
 ## Virtual Environments & Package Managers
 

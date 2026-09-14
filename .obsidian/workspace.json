@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "40256406c5cf7191",
+        "id": "04bf279fc2f70ae9",
         "type": "tabs",
         "children": [
           {
-            "id": "a0d102ff717a01b5",
+            "id": "ee82fe2cdc5bdeb4",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "notes/common_python_codes.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "common_python_codes"
+              "title": "New tab"
             }
           }
         ]
@@ -188,11 +184,11 @@
       "bases:Create new base": false
     }
   },
-  "active": "a0d102ff717a01b5",
+  "active": "ee82fe2cdc5bdeb4",
   "lastOpenFiles": [
     "notes/git_notes.md",
-    "notes/README.md",
     "notes/common_python_codes.md",
+    "notes/README.md",
     "notes/mac_notes.md",
     "notes/r_notes.md",
     "notes/ai_notes.md",
