@@ -4,20 +4,20 @@ Common Python snippets — formatting, environments, pandas, and syntax conventi
 
 ## Table of Contents
 
-- [String Formatting](#string-formatting)
-- [Virtual Environments \& Package Managers](#virtual-environments--package-managers)
-- [Project Repo Commands (uv)](#project-repo-commands-uv)
-- [Alembic (Database Migrations)](#alembic-database-migrations)
-- [Pandas / DataFrames](#pandas--dataframes)
-- [Statistics (NumPy)](#statistics-numpy)
-- [Functions](#functions)
-- [Making a Map (GeoPandas)](#making-a-map-geopandas)
-- [Misc Utilities](#misc-utilities)
-- [Classes](#classes)
-- [Python Syntax Conventions](#python-syntax-conventions)
-- [Data Validation](#data-validation)
-- [Project-Specific Notes](#project-specific-notes)
-- [AutoML (H2O)](#automl-h2o)
+- [[#String Formatting]]
+- [[#Virtual Environments and Package Managers]]
+- [[#Project Repo Commands (uv)]]
+- [[#Alembic (Database Migrations)]]
+- [[#Pandas DataFrames]]
+- [[#Statistics (NumPy)]]
+- [[#Functions]]
+- [[#Making a Map (GeoPandas)]]
+- [[#Misc Utilities]]
+- [[#Classes]]
+- [[#Python Syntax Conventions]]
+- [[#Data Validation]]
+- [[#Project-Specific Notes]]
+- [[#AutoML (H2O)]]
 
 ---
 
@@ -63,7 +63,7 @@ full_path = os.path.join(folder_1, folder_2, file_name)
 
 
 
-## Virtual Environments & Package Managers
+## Virtual Environments and Package Managers
 
 ### Windows (PowerShell)
 
@@ -193,7 +193,7 @@ uv run alembic current --check-heads
 uv run alembic history
 ```
 
-## Pandas / DataFrames
+## Pandas DataFrames
 
 ### Reading Excel
 
@@ -251,6 +251,20 @@ data = {
 }
 
 df = pd.DataFrame(data)
+
+# Method 3:
+design_loc = pd.DataFrame(
+	[
+		("India", crop, loc, season)
+		for season in INDIA_SEASONS
+		for crop, loc in INDIA_CROP_LOCATIONS
+	]
+	+ [
+		("Denmark", crop, loc, "one harvest season")
+		for crop, loc in DENMARK_CROP_LOCATIONS
+	],
+	columns=["country", "crop", "location_research_centers", "season"],
+)
 ```
 
 ### Inserting & Renaming Columns
@@ -266,17 +280,18 @@ import pandas as pd
 df = df.rename(columns={'old_colname_1': 'new_colname_1', 'old_colname_2': 'new_colname_2'})
 ```
 
-### Merging DataFrames
+### Combine DataFrames
 
 ```python
-# If the joining columns have the same name
+# Join two dataframes based on one column
+## If the joining columns have the same name
 df = df.merge(
     index_df[["project_name", "id"]],
     on="project_name",
     how="left",
 )
 
-# If the joining columns have different names
+## If the joining columns have different names
 df = (
     df.merge(
         isolate_df[["other_isolate_name", "id"]],
@@ -287,9 +302,26 @@ df = (
     .drop(columns=["other_isolate_name"])
 )
 
-# Assign every df_2 row to every df_1 row
+## Assign every df_2 row to every df_1 row
 cross_df = pd.merge(df_1, df_2, how="cross")
+
+
+# Join two dataframes based on two columns
+merged_df = pd.merge(df1, df2, on=["strain_id", "starch_type"], how="inner")
+
+merged_df = pd.merge(
+	df1, df2,
+	left_on=["strain_id", "starch_type"],
+	right_on=["isolate_id", "crop_type"],
+	how="inner"
+)
 ```
+
+Column bind
+```python
+df3 = pd.concat([df1, df2["value"]], axis=1)
+```
+
 
 ### Sorting & Reordering
 
@@ -396,6 +428,32 @@ filtered_df = df.dropna(subset=["strain_id"])
 distinct_df = df.drop_duplicates()
 ```
 
+### Unpack data
+
+df.explode()
+
+```python
+import pandas as pd
+
+df = pd.DataFrame({
+    "experiment_id": [1, 2],
+    "location": ["Farm_A", "Farm_B"],
+    "strains_tested": [["Corn", "Wheat"], ["Soy"]]
+})
+
+# Explode the lists into separate rows
+exploded_df = df.explode("strains_tested")
+
+print(exploded_df)
+```
+
+| **index** | **experiment_id** | **location** | **strains_tested** |
+| --------- | ----------------- | ------------ | ------------------ |
+| 0         | 1                 | Farm_A       | Corn               |
+| 0         | 1                 | Farm_A       | Wheat              |
+| 1         | 2                 | Farm_B       | Soy                |
+Look closely at the "After Exploding" table above. Notice that the row index (`0`) is duplicated for both "Corn" and "Wheat". If you want a clean, sequential index after exploding, you should chain `.reset_index(drop=True)` to the end.
+
 ### Inspecting DataFrames
 
 ```python
@@ -407,6 +465,9 @@ df.dtypes             # column names + their data types
 df.info()             # column names, types, and non-null counts
 df.head()
 df["strain_id"].unique()
+
+# Returns just the integer count of unique IDs
+df["id"].nunique()
 
 # Show the data types in all the columns
 strain_df.dtypes
@@ -432,7 +493,7 @@ df["has_money"] = df["money"].eq("+")
 
 # Loop through a DataFrame row by row — returns an iterator yielding
 # (index, row) where row is a pandas Series.
-locations.iterrows()
+df.iterrows()
 ```
 
 ### Splitting Columns
@@ -456,14 +517,28 @@ df.columns = df.columns.str.replace(' ', '_')   # replace spaces with _
 df.columns = df.columns.str.lower().str.replace(' ', '_')  # combine both
 ```
 
+Cleanup using certain patterns
+```python
+import re
+pattern_commas = re.compile(r"\,|and")
+messy_text = "Wheat,Corn andSoybeans"
+# Replace commas and "and" with a standard dash
+clean_text = pattern_commas.sub("-", messy_text)
+print(clean_text)
+# Wheat-Corn -Soybeans
+```
+
 ## Statistics (NumPy)
 
 ```python
 # Creates a random number generator object in NumPy, initialized with a seed of 42
 RNG = np.random.default_rng(42)
 
-# Generates a single random number from a normal (bell curve) distribution.
 # RNG uses NumPy's modern Generator object (e.g. RNG = np.random.default_rng()),
+# Generates a random decimal number between 0.0 (inclusive) and 1.0 (exclusive)
+RNG.random()
+
+# Generates a single random number from a normal (bell curve) distribution.
 # which is faster and statistically superior to the older np.random.normal().
 RNG.normal(mean_value, sd)
 
@@ -493,6 +568,8 @@ df_summary = (
     df.groupby("Treatment")["Symptom_Area_Pct"]
     .agg(mean="mean", std="std", n="count")
 )
+
+summary_df = df.groupby(["strain_id", "starch_type"])["value"].sum().reset_index()
 ```
 
 ## Functions

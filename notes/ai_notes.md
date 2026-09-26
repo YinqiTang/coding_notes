@@ -6,8 +6,8 @@ _Merged from `claude_notes.txt` and `LLM_notes.txt`._
 
 ## Table of Contents
 
-- [Claude Code CLI](#claude-code-cli)
-- [LLM Wiki Workflow (Obsidian)](#llm-wiki-workflow-obsidian)
+- [[#Claude Code CLI]]
+- [[#LLM Wiki Workflow (Obsidian)]]
 
 ---
 
