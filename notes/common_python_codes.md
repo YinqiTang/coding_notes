@@ -2,22 +2,9 @@
 
 Common Python snippets — formatting, environments, pandas, and syntax conventions.
 
-## Table of Contents
 
-- [[#String Formatting]]
-- [[#Virtual Environments and Package Managers]]
-- [[#Project Repo Commands (uv)]]
-- [[#Alembic (Database Migrations)]]
-- [[#Pandas DataFrames]]
-- [[#Statistics (NumPy)]]
-- [[#Functions]]
-- [[#Making a Map (GeoPandas)]]
-- [[#Misc Utilities]]
-- [[#Classes]]
-- [[#Python Syntax Conventions]]
-- [[#Data Validation]]
-- [[#Project-Specific Notes]]
-- [[#AutoML (H2O)]]
+```table-of-contents
+```
 
 ---
 

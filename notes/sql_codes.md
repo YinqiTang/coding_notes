@@ -1,6 +1,6 @@
 
-# Table of Contents
-```toc
+
+```table-of-contents
 ```
 
 # Metabase

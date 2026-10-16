@@ -1,20 +1,24 @@
 {
   "main": {
-    "id": "cb8aa9d03310f8db",
+    "id": "6028851e95ab77f7",
     "type": "split",
     "children": [
       {
-        "id": "be94e8d787f2cd45",
+        "id": "ce57e7e9a8b3c0a4",
         "type": "tabs",
         "children": [
           {
-            "id": "c39f399e28d9f3ab",
+            "id": "7f63eb176cbdde13",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "notes/sql_codes.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "sql_codes"
             }
           }
         ]
@@ -23,30 +27,30 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "052695f323fe80d5",
+    "id": "46d689212c67932d",
     "type": "split",
     "children": [
       {
-        "id": "53f056bcebccc93e",
+        "id": "fbd5582d114765d1",
         "type": "tabs",
         "children": [
           {
-            "id": "dfc728fdce5ada3f",
+            "id": "03e760d4129d84c0",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
                 "autoReveal": false,
-                "showSearch": true,
+                "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "文件列表"
             }
           },
           {
-            "id": "9df3bc4ac7bc9c9c",
+            "id": "537566cd2928fff8",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -59,11 +63,11 @@
                 "sortOrder": "alphabetical"
               },
               "icon": "lucide-search",
-              "title": "Search"
+              "title": "搜索"
             }
           },
           {
-            "id": "79a747746a5ba265",
+            "id": "5cbef88e2796758e",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -72,31 +76,31 @@
                 "searchQuery": ""
               },
               "icon": "lucide-bookmark",
-              "title": "Bookmarks"
+              "title": "书签"
             }
           }
         ]
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 300
   },
   "right": {
-    "id": "2e3c15621267ecb6",
+    "id": "30fe5105cb3d37dd",
     "type": "split",
     "children": [
       {
-        "id": "d5f66243c944ed5f",
+        "id": "2c1e6e37fbfa0c0b",
         "type": "tabs",
         "children": [
           {
-            "id": "70a81151b615c08e",
+            "id": "71f18dd091138e86",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "notes/common_python_codes.md",
-                "collapseAll": true,
+                "file": "README.md",
+                "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
                 "showSearch": false,
@@ -105,11 +109,11 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "反向链接"
             }
           },
           {
-            "id": "67a3d178d45a34b8",
+            "id": "286fe386538dbe14",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
@@ -119,11 +123,11 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "出链"
             }
           },
           {
-            "id": "e9cc0a78497a50fd",
+            "id": "643bba5ea89b1023",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -134,11 +138,11 @@
                 "searchQuery": ""
               },
               "icon": "lucide-tags",
-              "title": "Tags"
+              "title": "标签"
             }
           },
           {
-            "id": "336d63fb72eca51c",
+            "id": "cb5b06985aedb3b0",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -148,60 +152,61 @@
                 "searchQuery": ""
               },
               "icon": "lucide-archive",
-              "title": "All properties"
+              "title": "添加笔记属性"
             }
           },
           {
-            "id": "230712f45a54fc21",
+            "id": "0aae59d521940853",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
+                "file": "README.md",
                 "followCursor": false,
-                "showSearch": true,
+                "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "大纲"
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "horizontal",
-    "width": 437.625
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "daily-notes:Open today's daily note": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
     }
   },
-  "active": "c39f399e28d9f3ab",
+  "active": "7f63eb176cbdde13",
   "lastOpenFiles": [
-    "notes/sql_codes.md",
     "notes/README.md",
-    "notes/common_python_codes.md",
-    "notes/git_notes.md",
-    "notes/mac_notes.md",
     "notes/r_notes.md",
     "notes/obsidian_notes.md",
-    "README.md",
-    "notes/ai_notes.md",
-    "Untitled.canvas",
-    "Untitled.base",
-    "pictures",
+    "notes/mac_notes.md",
+    "notes/git_notes.md",
+    "notes/common_python_codes.md",
     "notes/bash_notes.md",
-    "Untitled 1.base",
-    "notes/python/common_python_codes.md",
-    "notes/mac/mac_notes.md",
-    "notes/git/git_notes.md",
-    "notes/ai/ai_notes.md"
+    "notes/ai_notes.md",
+    "notes/sql_codes.md",
+    "README.md",
+    "archive/r_package_notes.txt",
+    "archive/mac_notes.txt",
+    "archive/LLM_notes.txt",
+    "archive/git_notes.txt",
+    "archive/common_r_codes.txt",
+    "archive/common_python_codes.txt",
+    "archive/claude_notes.txt",
+    "archive"
   ]
 }

@@ -4,10 +4,9 @@ Notes on working with Claude Code and running an AI-maintained wiki in Obsidian.
 
 _Merged from `claude_notes.txt` and `LLM_notes.txt`._
 
-## Table of Contents
 
-- [[#Claude Code CLI]]
-- [[#LLM Wiki Workflow (Obsidian)]]
+```table-of-contents
+```
 
 ---
 
