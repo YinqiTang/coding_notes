@@ -1,5 +1,0 @@
-library(devtools)
-document()
-load_all()
-check()
-test()
