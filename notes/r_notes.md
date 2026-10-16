@@ -33,7 +33,7 @@ renv::install()
 renv::snapshot()
 ```
 
-### rv package
+### rv package (A modern method)
 Alternatively, there is a newer package called rv, which seems to record the R version and package versions. It looks like something similar to `uv` for Python. (Never try it but it worths testing)
 
 [https://a2-ai.github.io/rv-docs/](https://a2-ai.github.io/rv-docs/ "https://a2-ai.github.io/rv-docs/")
@@ -41,9 +41,23 @@ Alternatively, there is a newer package called rv, which seems to record the R v
 `rv + rig` is a more modern R workflow to handle R packages and R versions.
 https://antoinelucasfra.github.io/posts/rv-modern-r-package-manager/
 
+### Styling
+Automatic reformatter (modern): `air`
+Manual reformatter: `styler`
+Lint check: [lintr](https://lintr.r-lib.org/)
+
+
+
 ## Data
 
+### Basic
+```r
+# Show the first 5 rows of your dataframe
+head(df)
 
+# Show the first 10 rows of your dataframe
+head(df, n=10)
+```
 
 ### Data cleaning
 ```r
@@ -60,6 +74,52 @@ arrange()
 filter()
 select()
 case_when()
+```
+
+
+## Plot
+
+```r
+library(ggplot2)
+library(tidyr)
+
+df <- data.frame(
+  name = c("A", "A", "A", "B", "B", "B"),
+  value_1 = 1:6,
+  value_2 = 101:106
+)
+
+# 1. Reshape the data from wide to long
+df_long <- pivot_longer(df, 
+                        cols = c(value_1, value_2), 
+                        names_to = "variable", 
+                        values_to = "value")
+
+# 2. Convert to factor and set the exact order you want
+df_long$variable <- factor(df_long$variable, levels = c("value_2", "value_1"))
+
+# 3. Plot using Method 2 and facet_wrap
+ggplot(df_long, aes(x = name, y = value)) +
+  stat_summary(fun = mean, geom = "bar", fill = "steelblue", color = "black") +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  # Splits into two side-by-side plots
+  facet_wrap(~ variable, scales = "free_y") +  
+  # Add ncol = 1 to stack vertically
+  # facet_wrap(~ variable, ncol = 1, scales = "free_y") +
+  coord_cartesian(ylim = c(0, 20)) +
+  labs(title = "Mean Values with Standard Error",
+       x = "Name",
+       y = "Mean")+
+  theme(axis.text.x = element_text(size = 6))
+```
+
+## Functions
+```r
+function_name <- function(arg1, arg2) {
+  # Code to execute goes here
+  result <- arg1 + arg2
+  return(result) 
+}
 ```
 
 ## Package Development (devtools)

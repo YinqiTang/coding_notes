@@ -477,6 +477,7 @@ strain_df.to_csv('strain_table.csv', index=True)
 
 # Locate a certain cell
 .loc[row, col]
+df.loc["id_15", "name"]="AAAB" # Assign a value into a cell
 
 # .loc — selects by label (the actual index/column names)
 df.loc[10]
@@ -526,6 +527,12 @@ messy_text = "Wheat,Corn andSoybeans"
 clean_text = pattern_commas.sub("-", messy_text)
 print(clean_text)
 # Wheat-Corn -Soybeans
+```
+
+### Count
+```python
+# Count unique items in the strain_id column
+unique_count = df["strain_id"].nunique()
 ```
 
 ## Statistics (NumPy)
@@ -642,6 +649,13 @@ plt.show()
 ## Misc Utilities
 
 ```python
+# Create a folder if it does not exist
+image_folder = output_folder / "images"
+image_folder.mkdir(parents=True, exist_ok=True)
+```
+
+
+```python
 # __dir__() is a built-in Python method that returns a list of everything
 # attached to an object — its methods, properties, and internal attributes.
 data_loader.__dir__()
@@ -747,4 +761,34 @@ h2o.init()
 
 loaded_model = h2o.load_model(model_path)  # the path printed by the save cell
 loaded_model.predict(some_h2o_frame)       # use it on new data
+```
+
+## Quarto
+Check the execute environment
+```python
+import sys
+print(sys.executable)
+```
+
+## Image
+
+Read image and do some basic operations
+```python
+import cv2
+image_path = "XXX.png"
+image = cv2.imread(str(image_path))
+
+# Counter-rotate image
+rotated_image=cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+
+# Flip an image upside down
+flipped_image=cv2.flip(image, 0) # 0 = flip around the horizontal axis
+```
+
+Show image
+```python
+import matplotlib.pyplot as plt
+plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+plt.axis("off") # hide the axis ticks
+plt.show()
 ```
