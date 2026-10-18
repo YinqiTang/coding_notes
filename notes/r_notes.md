@@ -6,8 +6,11 @@
 ## Environment
 
 A common setup is to use **rig** for **R versions** and **renv** for **project packages**.
-### R version
+### R version - rig
 The most popular tool for this is **rig** (the R Installation Manager), developed by Gábor Csárdi as part of the r-lib project at Posit.
+
+[Getting started – rig](https://rig.r-lib.org/tutorial.html)
+
 
 ```bash
 rig add release      # install the latest R release
@@ -18,10 +21,33 @@ rig rm 4.2           # remove a version
 rig rstudio 4.3      # open RStudio with a specific R version
 ```
 
-Installation:
-- macOS: Homebrew (`brew tap r-lib/rig && brew install --cask rig`), 
-- Windows: winget (`winget install posit.rig`) (or go to the website and download installers)
-- Linux instructions and downloads are on the GitHub repo at github.com/r-lib/rig.
+Installation: Details see [Installing rig – rig](https://rig.r-lib.org/install.html)
+- macOS: Homebrew
+- Windows: go to the website and download installers)
+
+```bash
+# Method 1: Install the lastest R version inside your Windows user account
+rig --user add release
+
+# Method 2: Open PowerShell with un as administrator
+# makes R available to all Windows users
+rig --admin add release
+rig --admin list
+```
+
+For Method 1, we can set user as the default mode:
+```bash
+rig config set mode=user
+rig add release
+# Then open a new PowerShell window and verify:
+rig list
+R --version
+# This installs a separate R release under your user profile; 
+#it does not delete or alter existing R versions. 
+# You can still inspect the old system installations later with:
+rig --admin list
+```
+
 
 ### renv Environment
 
@@ -130,3 +156,28 @@ load_all()
 check()
 test()
 ```
+
+Use [`usethis`]([Automate Package and Project Setup • usethis](https://usethis.r-lib.org/)) package for R package development
+
+```r
+install.packages(c("usethis", "devtools"))
+
+# Create a new package
+library(usethis)
+usethis::create_package("new_package_name")
+
+# create a new .R file below R/
+use_r("new_function_name")
+
+# Add some useful packages
+use_package("rmarkdown", "Suggests")
+```
+
+Use roxygen2 [In-Line Documentation for R • roxygen2](https://roxygen2.r-lib.org/index.html)  to help documente packages in a standard way
+
+Insert the Roxygen skeleton in Positron
+1. Place your cursor on the function name
+2. Look for the lightbulb icon (💡) beside the code.
+3. Click the lightbulb.
+4. Select the action to generate a Roxygen documentation skeleton.
+5. Then run `devtools::document()`
