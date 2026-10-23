@@ -4,35 +4,85 @@
 Pandoc — Convert Markdown Notes to Word/HTML
 ```
 
-
-## Pandoc — Convert Markdown Notes to Word/HTML 
-
-Pandoc is a system-wide CLI tool once installed — works in any folder
-
-Install (macOS)
+## Basic (Probably for Mac)
 ```bash
-brew install pandoc
+# Creates a new folder named `scripts` inside your home directory.
+mkdir -p ~/scripts
+```
+**`-p`**: The "parents" flag. It ensures the command doesn't throw an error if the `scripts` folder already exists. If you were creating a deeper path (like `~/scripts/bash/backups`), it would also create all the missing parent folders along the way.
+
+**Make a bash script:**
+- Method 1: use nano
+```bash
+# Open a text editor right in your terminal so you can write the code
+nano ~/scripts/backup.sh
+```
+- **`nano`**: A built-in, beginner-friendly command-line text editor.
+- **`~/scripts/`**: The path to the folder you just created in the previous step.
+- **`backup.sh`**: The file you are creating. The `.sh` extension is a standard convention indicating that this file is a shell script.
+
+When you press Enter , your terminal will be replaced by the `nano` interface. You can type your code, press `Ctrl + O` (then Enter) to save it, and `Ctrl + X` to exit back to the normal command line.
+
+- Method 2: make a new file in Positron (recommended)
+
+
+#### Example case
+
+```bash
+# Make a new folder
+mkdir -p ~/scripts
+cd ~/scripts
+
+# Make the bash script
+nano backup.sh
+
+# Make it runnable
+chmod +x backup.sh
+
+# Run it
+./backup.sh
 ```
 
- Basic conversions
+## Backup
+### rsync - sync stuff in Mac
 ```bash
-# Markdown -> Word
-pandoc "notes/your-note.md" -o "your-note.docx"
+# Preview what would be copied (nothing is changed)
+rsync -av --dry-run /source_folder/ /destination_folder/
 
-# Markdown -> HTML (for email/web, no extra install needed)
-pandoc "notes/your-note.md" -o "your-note.html"
+# Do it for real
+rsync -av --progress /source_folder/ /destination_folder/
+
+# Example to skip some folder with specific names at any depth
+rsync -avh --delete \
+ --exclude '.venv/' \
+ --exclude 'XXX/' \
+ /source_folder/ /destination_folder/
 ```
 
-Useful options
+**Key flags:**
+
+- `-a` (archive): Synchronizes directories recursively, transfers special and block devices, and preserves symlinks, modification times, groups, and permissions.
+- `-v` (verbose): Shows you exactly which files are being copied.
+- `-h` (Human-readable): Displays file sizes in KB/MB/GB instead of plain bytes.
+- `--delete` (optional but common): Add this flag if you want to **mirror** the folders. It will delete files in the destination that you have removed from the source.
+- `--dry-run` (optional): Add this to see what _would_ happen without actually copying anything. Always use this first when testing.
+
+**Example Bash script (backup.sh) for backup stuff in Mac:**
 ```bash
-# Add a title/metadata
-pandoc note.md -o note.docx --metadata title="Meeting Notes 2026-09-16"
+#!/bin/bash
+SOURCE="/source_folder"
+DEST="/destination_folder"
 
-# Use custom Word styling (create reference.docx once with preferred fonts/headings)
-pandoc note.md -o note.docx --reference-doc=reference.docx
+# Stop if the backup drive isn't plugged in
+[ -d "$DEST" ] || { echo "Backup drive not connected"; exit 1; }
 
-# Convert every .md file in a folder to .docx
-for f in notes/*.md; do pandoc "$f" -o "${f%.md}.docx"; done
+# --delete: files removed from SOURCE are also removed from DEST
+rsync -avh --delete \
+ --exclude '.venv' \
+ --exclude 'library' \
+ --exclude '.DS_Store' \
+ --exclude 'repositories' \
+ "$SOURCE/" "$DEST/"
 ```
 
 ### Robocopy - sync stuff in Windows
@@ -96,4 +146,52 @@ pause
 1. Replace the source and destination paths.
 2. Save the file as `backup.bat` (not `backup.bat.txt`).
 3. Double-click the file to start the backup.
+
+
+### restic (Mac and Window) - save version history
+You can not see the data directly. You need to recover the data with a specific version from the repo to another folder, and then you can see your data.
+```bash
+# 1. Initialize the repository and set a master password
+restic init --repo /path/to/my_backup_folder
+
+# 2. Run a Backup
+restic -r /path/to/my_backup_folder backup /path/to/source_folder
+
+# 3. View data backup history
+restic -r /path/to/my_backup_folder snapshots
+
+# 4. Restore data
+# If you lose a file, you can restore a specific snapshot (using its ID from the previous command) to a target folder.
+restic -r /path/to/my_backup_folder restore 79766175 --target /path/to/restore/location
+```
+
+## Pandoc — Convert Markdown Notes to Word/HTML 
+
+Pandoc is a system-wide CLI tool once installed — works in any folder
+
+Install (macOS)
+```bash
+brew install pandoc
+```
+
+ Basic conversions
+```bash
+# Markdown -> Word
+pandoc "notes/your-note.md" -o "your-note.docx"
+
+# Markdown -> HTML (for email/web, no extra install needed)
+pandoc "notes/your-note.md" -o "your-note.html"
+```
+
+Useful options
+```bash
+# Add a title/metadata
+pandoc note.md -o note.docx --metadata title="Meeting Notes 2026-09-16"
+
+# Use custom Word styling (create reference.docx once with preferred fonts/headings)
+pandoc note.md -o note.docx --reference-doc=reference.docx
+
+# Convert every .md file in a folder to .docx
+for f in notes/*.md; do pandoc "$f" -o "${f%.md}.docx"; done
+```
 

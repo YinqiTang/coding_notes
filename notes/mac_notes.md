@@ -41,3 +41,9 @@ Shows the version history of files on your computer.
 ## Positron
 
 - **Batch-comment several lines of code**: `Cmd` + `/`
+
+## Show hidden items in a folder
+
+**⌘ + Shift + .** (Command + Shift + period)
+
+Or in the terminal, run `ls -a`
