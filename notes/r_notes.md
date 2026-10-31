@@ -181,3 +181,20 @@ Insert the Roxygen skeleton in Positron
 3. Click the lightbulb.
 4. Select the action to generate a Roxygen documentation skeleton.
 5. Then run `devtools::document()`
+
+
+#### Install rtools to build packages
+For Windows, install the appropriate version of Rtools from https://cran.r-project.org/bin/windows/Rtools/.
+
+Verify Rtools installation:
+```R
+install.packages("pkgbuild")
+pkgbuild::check_build_tools()
+
+# If everything is installed correctly, the result should be:
+# Your system is ready to build packages!
+```
+
+
+#### Tutorials for R packages
+[R Packages (2e)](https://r-pkgs.org/)
