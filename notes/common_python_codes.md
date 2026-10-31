@@ -120,6 +120,32 @@ uv remove <package_name>
 
 ## Alembic (Database Migrations)
 
+**List of useful commands**
+```bash
+# Make a new alembic schema
+uv run alembic revision -m 'revision_description_here'
+
+# If you've created a new revision script and want to update the database
+# This upgrades the database to the newest revision.
+uv run db-upgrade
+
+# If you want to upgrade to a specific revision that isn't the newest
+uv run db-upgrade <revision_id>
+
+# Downgrade to a specific version
+uv run db-downgrade <revision_id>
+
+# Check the ID of the latest revision
+uv run alembic heads
+
+# Check whether your latest revision matches the one in the database
+uv run alembic current --check-heads
+
+# Check the history of all revisions
+uv run alembic history
+```
+
+
 Good practices:
 
 ```bash
@@ -151,6 +177,7 @@ Logic for changes:
 
 - For data schema: when the branch is merged into main, the data schema updates in Production.
 - Data upload: manual upload (old process).
+
 
 Revision chain example:
 
