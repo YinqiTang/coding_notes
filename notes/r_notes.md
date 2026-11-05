@@ -148,6 +148,7 @@ function_name <- function(arg1, arg2) {
 ```
 
 ## Package Development (devtools)
+#### Useful codes
 
 ```r
 library(devtools)
@@ -173,6 +174,39 @@ use_r("new_function_name")
 use_package("rmarkdown", "Suggests")
 ```
 
+#### Add tests
+```r
+# Set up testthat
+## You only need to do this once
+install.packages("testthat")
+usethis::use_testthat(3)
+
+# Add a new test
+usethis::use_test("function_name")
+# This creates:`tests/testthat/test-function_name.R`
+
+```
+
+
+Open `test-function_name.R` and write:
+
+```r
+test_that(function_name XXXX", {
+
+  expect_output(
+    function_name("AAPL"),
+    expected_output
+  )
+
+})
+```
+
+```r
+# Check all the tests
+devtools::test()
+```
+
+#### Add documentation
 Use roxygen2 [In-Line Documentation for R • roxygen2](https://roxygen2.r-lib.org/index.html)  to help documente packages in a standard way
 
 Insert the Roxygen skeleton in Positron
