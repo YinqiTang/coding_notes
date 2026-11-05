@@ -34,6 +34,7 @@ COALESCE(source_1."name_1", source_2."name_2") AS "name",
 ```
 
 ## Join
+### Different joinings
 ```sql
 SELECT DISTINCT
   t."customer_id",
@@ -75,4 +76,44 @@ WHERE
   d."item_id" IS NOT NULL
 ORDER BY
   "info_id"
+```
+
+### Stack two datasets
+**`UNION ALL`**: it takes the results from the top query and stacks the results from the bottom query directly underneath them. Because it uses `ALL`, it will not try to deduplicate rows across the two sets.
+```sql
+WITH sources AS (
+  SELECT DISTINCT "strain_id", 'data_source_1' AS src
+  FROM "schema_1"."strain_table"
+  
+  UNION ALL
+  
+  SELECT DISTINCT "strain_id", 'data_source_2' AS src
+  FROM "schema_2"."strain_table"
+
+),
+```
+
+Output:
+
+| **strain_id** | **src**       |
+| ------------- | ------------- |
+| ISO-001       | data_source_1 |
+| ISO-002       | data_source_1 |
+| ISO-003       | data_source_1 |
+| ISO-004       | data_source_1 |
+| ISO-002       | data_source_2 |
+| ISO-005       | data_source_2 |
+| ISO-006       | data_source_2 |
+
+## Make temporary tables
+```sql
+WITH combined_table AS (
+  SELECT DISTINCT
+    strain."strain_id",
+    info."information"
+  FROM "schema_1"."strain" strain
+  LEFT JOIN "schema_2"."info_table" info
+    ON strain."strain_id" = info."strain_id"
+  WHERE strain."strain_id" IS NOT NULL
+)
 ```

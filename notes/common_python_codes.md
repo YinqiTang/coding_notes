@@ -120,7 +120,7 @@ uv remove <package_name>
 
 ## Alembic (Database Migrations)
 
-**List of useful commands**
+### List of useful commands
 ```bash
 # Make a new alembic schema
 uv run alembic revision -m 'revision_description_here'
@@ -146,7 +146,7 @@ uv run alembic history
 ```
 
 
-Good practices:
+### Good practices
 
 ```bash
 # Check if the local database syncs with the production database
@@ -155,13 +155,15 @@ uv run alembic current --check-heads
 # If not, do something
 uv run db-upgrade
 
-# If it still does not work, click "drop(force)" for the local database in
-# pgAdmin, then:
+# Drop the data in the local database 
+# Then copy the data in the production database to the Local one
 uv run copy-data -d
-# OR
+
+# Alternatively, only copy the data in the production database to the local one
 uv run copy-data
 ```
 
+### Current databases
 There are three types of databases in the system:
 
 - **Production** — the real one
@@ -178,7 +180,21 @@ Logic for changes:
 - For data schema: when the branch is merged into main, the data schema updates in Production.
 - Data upload: manual upload (old process).
 
+### Debugs
+```bash
+# reset your local database
+uv run db-downgrade -d
 
+# run all migrations again from the beginning
+uv run db-upgrade
+
+# Copy data from the production database to the local database
+uv run copy-data
+
+# Run any data upload script
+```
+
+### Others
 Revision chain example:
 
 ```
@@ -279,9 +295,18 @@ design_loc = pd.DataFrame(
 	],
 	columns=["country", "crop", "location_research_centers", "season"],
 )
+
+# Method 4: Create the dataframe with the specified index
+data = {
+	"fraction_1": [0, 0.1, 0.9],
+	"fraction_2": [0, 0, 0],
+}
+index = ["name_1", "name_2", "name_3"]
+
+df = pd.DataFrame(data, index=index)
 ```
 
-### Inserting & Renaming Columns
+### Inserting, Renaming and Select Columns
 
 ```python
 # Insert new values
@@ -292,6 +317,17 @@ df.insert(0, 'ID', 101)
 # Rename some column names
 import pandas as pd
 df = df.rename(columns={'old_colname_1': 'new_colname_1', 'old_colname_2': 'new_colname_2'})
+
+# Select columns
+df = df[["col_1", "col_2"]]
+
+# Make a new column and assign values based on other columns
+df["combined_name"] = (
+	"name_"
+	+ df["original_id"].astype(str)
+	+ "_new_"
+	+ df["new_id"].astype(str)
+)
 ```
 
 ### Combine DataFrames
@@ -329,11 +365,27 @@ merged_df = pd.merge(
 	right_on=["isolate_id", "crop_type"],
 	how="inner"
 )
+
+import pandas as pd
+
+# Merge using df1's column and df2's index
+merged_df = df1.merge(
+	df2,
+	left_on="match_col",
+	right_index=True,
+	how="inner"
+)
+
 ```
 
 Column bind
 ```python
+# Column bind
 df3 = pd.concat([df1, df2["value"]], axis=1)
+
+# Row bind
+## `ignore_index=True` to generate a fresh, sequential index for the newly combined DataFrame
+combined_df = pd.concat([df1, df2], ignore_index=True)
 ```
 
 
@@ -432,7 +484,7 @@ filtered_data = data.query(
 )
 ```
 
-### Dropping Rows / Duplicates
+### Drop
 
 ```python
 # Drop rows where 'strain_id' is NaN
@@ -440,6 +492,9 @@ filtered_df = df.dropna(subset=["strain_id"])
 
 # Drop duplicated rows, like distinct() in R
 distinct_df = df.drop_duplicates()
+
+# Remove columns
+filtered_df = df.drop(columns=["other_isolate_name"])
 ```
 
 ### Unpack data
@@ -478,7 +533,7 @@ df.columns.tolist()   # as a plain Python list
 df.dtypes             # column names + their data types
 df.info()             # column names, types, and non-null counts
 df.head()
-df["strain_id"].unique()
+df["id"].unique()
 
 # Returns just the integer count of unique IDs
 df["id"].nunique()
@@ -543,10 +598,32 @@ print(clean_text)
 # Wheat-Corn -Soybeans
 ```
 
+### Replace
+```python
+# Replace "old_string" with "new_string" in Column name
+df["name"] = df["name"].replace("old_string", "new_string")
+
+# Change the value from "customer_number" to "number" in a column 
+df_customer["customer_id"] = (
+	df_customer["customer_id"]
+	.str.replace("customer_", "", regex=False)
+	.astype("Int64")
+)
+```
+
 ### Count
 ```python
 # Count unique items in the strain_id column
 unique_count = df["strain_id"].nunique()
+```
+
+### Rounding
+```python
+# Method 1: Round both columns to 2 decimal places
+df[["value_1", "value_2"]] = df[["value_1", "value_2"]].round(2)
+
+# Method 2:
+df = df.round({"value_1": 2, "value_2": 1})
 ```
 
 ## Statistics (NumPy)
@@ -590,7 +667,42 @@ df_summary = (
     .agg(mean="mean", std="std", n="count")
 )
 
+summary_df = (
+	df.groupby("strain_id")["yield"]
+	.agg(["mean", "sem"])
+	.reset_index()
+)
+
+summary_df = (
+	df.groupby("strain_id")[["value_1", "value_2"]]
+	.agg(["mean", "sem"])
+	.reset_index()
+)
+
 summary_df = df.groupby(["strain_id", "starch_type"])["value"].sum().reset_index()
+```
+
+
+## if
+
+### Guard Clause
+This pattern is called a **"Guard Clause"** or "Early Return." Instead of writing massive, nested `if` statements to check if something _is_ correct, you check if it is _wrong_, boot it out immediately with `continue`, and keep the rest of your code clean and flat
+```python
+file_names = [
+    "123_results.csv",
+    "abc_results.csv",
+    "456_notes.txt",
+    "789_results.csv"
+]
+
+for name in file_names:
+    # If it is NOT a .csv OR the first part is NOT a number...
+    if not name.endswith(".csv") or not name.split("_")[0].isdigit():
+        print(f"Skipping: {name}")
+        continue  # ...skip this file and immediately move to the next one
+        
+    # If the code makes it here, the file passed both checks!
+    print(f"✅ Downloading: {name}")
 ```
 
 ## Functions
@@ -756,6 +868,14 @@ assert set({"Field_A", "Field_C"}) <= set({"Field_A", "Field_B", "Field_C"})  # 
 # set(field_data["location_name"]):
 # Converts values into a Python set, which strips out duplicates and keeps
 # only unique location names.
+```
+
+
+```python
+df = pd.DataFrame({"value_1": [10, 20, 30]}) 
+df_2 = pd.DataFrame({"value_2": [10, 99, 30]}) 
+# Compare row-by-row 
+df["value_1"] == df_2["value_2"]
 ```
 
 ## Project-Specific Notes
