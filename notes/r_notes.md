@@ -216,7 +216,6 @@ Insert the Roxygen skeleton in Positron
 4. Select the action to generate a Roxygen documentation skeleton.
 5. Then run `devtools::document()`
 
-
 #### Install rtools to build packages
 For Windows, install the appropriate version of Rtools from https://cran.r-project.org/bin/windows/Rtools/.
 
@@ -232,3 +231,22 @@ pkgbuild::check_build_tools()
 
 #### Tutorials for R packages
 [R Packages (2e)](https://r-pkgs.org/)
+
+## Quarto
+
+---
+
+title: "xxx"
+format: gfm (this format fits to the view in GitHub)
+engine: knitr
+
+---
+
+
+```r
+#| label: Save results to CSV
+#| echo: true # --> true: show the code in the report
+#| eval: false # --> false: will not execute this code chunk
+write.csv(df, "test_result.csv", row.names = FALSE)
+```
+

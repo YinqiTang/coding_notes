@@ -70,6 +70,16 @@ git fetch --prune
 
 This fetches the latest updates and deletes any local tracking branches that no longer exist on the remote server GitHub.
 
+Delete a branch in my local computer
+```bash
+# To safely delete a local branch, run:
+git branch -d <branch-name>
+
+# To force delete a branch** (discarding any unmerged changes)
+git branch -D <branch-name>
+```
+
+
 ## Current project-specific codes
 Before opening a pull request, run the following codes
 ```bash
