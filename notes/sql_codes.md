@@ -118,7 +118,6 @@ WITH combined_table AS (
 )
 ```
 
-
 ## Add filters
 Add one filter
 ```sql
@@ -141,3 +140,5 @@ WHERE 1 = 1
   [[AND COALESCE("customer_id") ILIKE '%' || {{customer_id}} || '%']]
   [[AND "sales" ILIKE '%' || {{sale_id}} || '%']]
 ```
+
+
