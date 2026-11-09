@@ -80,6 +80,59 @@ git branch -D <branch-name>
 ```
 
 
+## Fix Issues
+### Fix a divergence issue
+
+**Issue: When `git push` is rejected or `git pull` says “divergent branches”**
+
+**The best way is to avoid it in advance by running `git pull` before editing anything.**
+
+If a divergence does happen, use the commands as follows.
+```bash
+git pull --rebase
+git push
+```
+
+If the pull stops with a **conflict**:
+1. Run `git status` and look for files listed as `both modified`.
+2. Open each one and fix the `<<<<<<<` / `=======` / `>>>>>>>` blocks. During a rebase, the top half is GitHub’s version and the bottom half is yours.
+3. Then run:
+
+```bash
+git add <file>
+git rebase --continue
+```
+
+4. Repeat until you see “Successfully rebased”, then run `git push`.
+
+**If `git push` says “not currently on a branch”:** the rebase isn’t finished yet. Run `git rebase --continue` first, then push.
+
+**If you get lost:** `git rebase --abort` undoes everything back to before the pull, so you can start over.
+
+### Accidentally Edit Stuff in the Main Branch
+**Issue**: In a repository with a main branch protection rule, you have edited stuff in the Main branch and ran the following codes.
+```bash
+git add XX
+git commit -m "xxx"
+git push # But it fails
+```
+
+- Option A: it was only a test and you don’t need it
+```bash
+# Delete the commit and put your local `main` back in sync with GitHub
+# All the new changes will be removed
+git reset --hard origin/main
+```
+
+- Option B: You want to keep the change
+```bash
+git switch -c test-protection     # Make a new branch that includes your commit
+git push -u origin test-protection
+git switch main
+git reset --hard origin/main      # clean up local main
+```
+
+
 ## Current project-specific codes
 Before opening a pull request, run the following codes
 ```bash
