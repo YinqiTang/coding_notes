@@ -80,6 +80,34 @@ git branch -D <branch-name>
 ```
 
 
+## Fix a divergence issue
+
+**Issue: When `git push` is rejected or `git pull` says “divergent branches”**
+
+**The best way is to avoid it in advance by running `git pull` before editing anything.**
+
+If a divergence does happen, use the commands as follows.
+```bash
+git pull --rebase
+git push
+```
+
+If the pull stops with a **conflict**:
+1. Run `git status` and look for files listed as `both modified`.
+2. Open each one and fix the `<<<<<<<` / `=======` / `>>>>>>>` blocks. During a rebase, the top half is GitHub’s version and the bottom half is yours.
+3. Then run:
+
+```bash
+git add <file>
+git rebase --continue
+```
+
+4. Repeat until you see “Successfully rebased”, then run `git push`.
+
+**If `git push` says “not currently on a branch”:** the rebase isn’t finished yet. Run `git rebase --continue` first, then push.
+
+**If you get lost:** `git rebase --abort` undoes everything back to before the pull, so you can start over.
+
 ## Current project-specific codes
 Before opening a pull request, run the following codes
 ```bash
