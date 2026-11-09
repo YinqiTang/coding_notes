@@ -73,6 +73,7 @@ Lint check: [lintr](https://lintr.r-lib.org/)
 
 
 
+
 ## Data
 
 ### Basic
@@ -82,6 +83,12 @@ head(df)
 
 # Show the first 10 rows of your dataframe
 head(df, n=10)
+
+# Check data type
+class(data)
+
+# Show data frame structure
+str(data)
 ```
 
 ### Data cleaning
@@ -100,6 +107,34 @@ filter()
 select()
 case_when()
 ```
+
+
+### Compare
+```r
+identical()
+all.equal()
+```
+
+
+## Loop or Similar Loop
+
+### sapply
+
+```r
+# Basic examples
+x <- c(1, 2, 3, 4, 5)
+sapply(x, function(a) a^2)
+
+# Process a list and add an additional argument
+my_list <- list(
+  A = c(1, 2, NA),
+  B = c(4, NA, 6)
+)
+
+sapply(my_list, mean, na.rm = TRUE)
+```
+
+
 
 
 ## Plot
@@ -249,4 +284,7 @@ engine: knitr
 #| eval: false # --> false: will not execute this code chunk
 write.csv(df, "test_result.csv", row.names = FALSE)
 ```
+
+## API Work
+Useful R package: [httr2](https://httr2.r-lib.org/)
 
