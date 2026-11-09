@@ -117,3 +117,27 @@ WITH combined_table AS (
   WHERE strain."strain_id" IS NOT NULL
 )
 ```
+
+
+## Add filters
+Add one filter
+```sql
+-- Add the syntax before the final ORDER BY
+[[WHERE "customer_id" ILIKE '%' || {{id}} || '%']] 
+ORDER BY "customer_id"
+```
+
+If `WHERE` already exists,
+```sql
+WHERE
+  schema_1."customer_id" IS NOT NULL
+[[AND table_1."sale_id" ILIKE '%' || {{sale_id}} || '%']] 
+```
+
+Add two filters
+```sql
+-- Add the syntax before the final ORDER BY
+WHERE 1 = 1
+  [[AND COALESCE("customer_id") ILIKE '%' || {{customer_id}} || '%']]
+  [[AND "sales" ILIKE '%' || {{sale_id}} || '%']]
+```
