@@ -233,6 +233,13 @@ test_that(function_name XXXX", {
     expected_output
   )
 
+# The second argument of `expect_error()` is a regular expression
+# that should match part of the error message.
+  expect_error(
+     function_name(123),
+    "Error XXX"
+  )
+
 })
 ```
 
