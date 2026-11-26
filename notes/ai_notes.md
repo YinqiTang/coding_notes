@@ -52,3 +52,8 @@ Typical flow when using the AI in the terminal:
    > I have added some new raw files, update the wiki.
 3. Periodically ask for a health check:
    > Please lint wiki
+
+## Learning Materials
+Harvard: [CS2680 Modern AI Systems: Agents and System Optimizations]([CS2680 Modern AI Systems: Agents and System Optimizations](https://cs2680.com/))
+
+[Andrej Karpathy - YouTube](https://www.youtube.com/@AndrejKarpathy/videos)
