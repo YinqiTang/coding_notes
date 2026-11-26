@@ -17,3 +17,5 @@ See the description above
 ## Git
 1. `control+P`
 2. Type `commit and sync`, then press Enter. It will automatically do `git pull`, `git add .` `git commit` and `git push` for all the changes.
+
+In the bottom-right corner, you can change branches.

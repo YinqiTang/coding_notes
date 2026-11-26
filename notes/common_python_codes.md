@@ -344,6 +344,11 @@ RNG.choice(["soil_1", "soil_2"], size=100)
 ```
 
 #### Data Generation with design
+```python
+arr = np.arange(1, 5)
+# array([1, 2, 3, 4])
+```
+
 Repeat
 ```python
 import pandas as pd
@@ -367,6 +372,9 @@ df = pd.DataFrame({ "value": [10, 20, 30] * 2 })
 df = pd.DataFrame({ "value": np.tile([10, 20, 30], 2) })
 ## [10, 10, 20, 20, 30, 30]
 
+# Method 5: arithmetic progression
+df_2["value"] = np.linspace(0.5, 4, 8)
+## [0.5, 1.0 , 1.5, 2.0 , 2.5, 3.0 , 3.5, 4.0 ]
 ```
 
 product function
@@ -470,7 +478,7 @@ merged_df = df1.merge(
 
 ```
 
-Column bind
+Column / Row bind
 ```python
 # Column bind
 df3 = pd.concat([df1, df2["value"]], axis=1)
@@ -818,6 +826,19 @@ df["my_column"] = df["my_column"].astype("datetime64[ns]")
 df["my_column"] = df["my_column"].astype("timedelta64[ns]")
 ```
 
+
+### min or max
+```python
+# `ncols or n_plots` handles None or 0
+min(ncols or n_plots, n_plots)
+```
+
+| **ncols** | **n_plots** | **ncols or n_plots** | **Final Result (min)** | **Grid Layout**                       |
+| --------- | ----------- | -------------------- | ---------------------- | ------------------------------------- |
+| `None`    | `3`         | `3`                  | **`3`**                | 1 row × 3 cols                        |
+| `2`       | `5`         | `2`                  | **`2`**                | 3 rows × 2 cols                       |
+| `4`       | `2`         | `4`                  | **`2`**                | 1 row × 2 cols (avoids empty columns) |
+
 ### Export files
 ```python
 # Export a CSV file
@@ -826,6 +847,11 @@ df.to_csv("my_data.csv", index=False)
 
 ## Statistics (NumPy)
 
+### Calculation
+```python
+# Round up into an integer
+math.ceil(n_plots / ncols)
+```
 
 ### Summary Tables (groupby)
 
@@ -1104,4 +1130,3 @@ plt.axis("off") # hide the axis ticks
 plt.show()
 ```
 
-test again

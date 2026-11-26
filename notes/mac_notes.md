@@ -49,3 +49,13 @@ Shows the version history of files on your computer.
 **⌘ + Shift + .** (Command + Shift + period)
 
 Or in the terminal, run `ls -a`
+
+## Check IP Address
+In the terminal
+```bash
+# Local IP
+ipconfig getifaddr en0
+
+# Public IP
+curl ifconfig.me
+```
