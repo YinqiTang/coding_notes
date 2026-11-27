@@ -1,3 +1,6 @@
+```toc
+```
+
 # Mac Notes
 
 Handy macOS shortcuts and tricks, especially for people coming from Windows.
@@ -59,3 +62,6 @@ ipconfig getifaddr en0
 # Public IP
 curl ifconfig.me
 ```
+
+## Full Screen
+Shortcut: **Control + Command + F**

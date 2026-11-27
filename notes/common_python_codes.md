@@ -59,6 +59,10 @@ import os # Pass all the strings as arguments
 full_path = os.path.join(folder_1, folder_2, file_name)
 ```
 
+### Make dictionary
+```python
+dict(zip(["color_a", "color_b", "color_c"], ["#8f8d88", "#2a78d6", "#eb6834"]))
+```
 
 
 ## Virtual Environments and Package Managers
