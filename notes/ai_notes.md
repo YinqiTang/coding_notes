@@ -83,3 +83,12 @@ Typical flow when using the AI in the terminal:
    > I have added some new raw files, update the wiki.
 3. Periodically ask for a health check:
    > Please lint wiki
+
+
+# Local AI
+
+## Learning Materials
+
+**Explain hardware and mechanisms:**
+[Local AI Explained: The Full Beginner Course](https://www.youtube.com/watch?v=VpT5qgkP2cU)
+Notes: check computer capacity, LM Studio as engine, Pi as harness
