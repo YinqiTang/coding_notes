@@ -9,6 +9,17 @@ Common Python snippets — formatting, environments, pandas, and syntax conventi
 ---
 
 ## Basic
+### Import and Export Files
+```python
+import pandas as pd
+
+# Import the CSV file
+df = pd.read_csv("my_data.csv")
+
+# For a tab-separated file
+df = pd.read_csv("my_data.tsv", sep="\t")
+```
+
 ### String Formatting
 
 F-strings with alignment formatting:
@@ -250,6 +261,7 @@ worksheet.merged_cells.ranges
 
 The pattern: `pd.DataFrame(list_of_dicts)` — each dict becomes one row, dict keys become column names.
 
+#### Methods
 ```python
 import pandas as pd
 
@@ -304,6 +316,94 @@ data = {
 index = ["name_1", "name_2", "name_3"]
 
 df = pd.DataFrame(data, index=index)
+```
+
+#### Random Data Generation
+```python
+# Creates a random number generator object in NumPy, initialized with a seed of 42
+RNG = np.random.default_rng(42)
+
+# RNG uses NumPy's modern Generator object (e.g. RNG = np.random.default_rng()),
+# Generates a random decimal number between 0.0 (inclusive) and 1.0 (exclusive)
+RNG.random()
+
+# Generates a single random number from a normal (bell curve) distribution.
+# which is faster and statistically superior to the older np.random.normal().
+RNG.normal(mean_value, sd)
+GNG.normal(loc=0.35, scale=0.1, size=100)
+
+# Generates a single random number from a Uniform Distribution (flat probability) —
+# every number in that range has an equal chance of being picked.
+RNG.uniform(min_value, max_value)
+
+# Randomly pick elements from a list, array, or sequence
+RNG.choice(a, size=None, replace=True, p=None)
+strains = ["STR-A", "STR-B", "STR-C", "STR-D"]
+chosen = RNG.choice(strains)
+RNG.choice(["soil_1", "soil_2"], size=100)
+```
+
+#### Data Generation with design
+```python
+arr = np.arange(1, 5)
+# array([1, 2, 3, 4])
+```
+
+Repeat
+```python
+import pandas as pd
+import numpy as np
+
+# Method 1:
+df = pd.DataFrame({
+    "value": np.repeat([10, 20], 2)
+})
+## Result: 10, 10, 20, 20
+
+# Method 2:
+np.repeat([10, 20, 30], [2, 3, 1])  
+## [10, 10, 20, 20, 20, 30]
+
+# Method 3:
+df = pd.DataFrame({ "value": [10, 20, 30] * 2 })
+## [10, 10, 20, 20, 30, 30]
+
+# Method 4: Same result as Method 3
+df = pd.DataFrame({ "value": np.tile([10, 20, 30], 2) })
+## [10, 10, 20, 20, 30, 30]
+
+# Method 5: arithmetic progression
+df_2["value"] = np.linspace(0.5, 4, 8)
+## [0.5, 1.0 , 1.5, 2.0 , 2.5, 3.0 , 3.5, 4.0 ]
+```
+
+product function
+```python
+# Method 1: 
+import pandas as pd
+from itertools import product
+
+condition = [10, 20]
+temperature = [30, 35]
+pH = [6, 7]
+replicate = range(1, 4)  # 1, 2, 3
+
+df = pd.DataFrame(
+    product(condition, temperature, pH, replicate),
+    columns=["condition", "temperature", "pH", "replicate"]
+)
+
+print(df.head(9))
+
+# Method 2: Only pandas
+import pandas as pd
+
+df = pd.MultiIndex.from_product(
+    [[10, 20], [30, 35], [6, 7]],
+    names=["condition", "temperature", "pH"]
+).to_frame(index=False)
+## Add 3 replicates to each combination by duplicating every row 3 times
+df = df.loc[df.index.repeat(3)].reset_index(drop=True)
 ```
 
 ### Inserting, Renaming and Select Columns
@@ -378,7 +478,7 @@ merged_df = df1.merge(
 
 ```
 
-Column bind
+Column / Row bind
 ```python
 # Column bind
 df3 = pd.concat([df1, df2["value"]], axis=1)
@@ -386,12 +486,13 @@ df3 = pd.concat([df1, df2["value"]], axis=1)
 # Row bind
 ## `ignore_index=True` to generate a fresh, sequential index for the newly combined DataFrame
 combined_df = pd.concat([df1, df2], ignore_index=True)
+
+combined_df = pd.concat([df1, df2, df3], ignore_index=True)
 ```
 
 
-### Sorting & Reordering
-
 ```python
+### Sorting & Reordering
 # Reorder and reset index
 df = df.sort_values(by="score", ascending=False)
 # Or
@@ -462,6 +563,15 @@ filtered_df = df[df["strain_id"] == "STR-001"]
 
 # Filter for rows where strain_id is not "STR-001"
 filtered_df = df[df["strain_id"] != "STR-001"]
+
+# Filter rows with multiple options
+filtered_df = df[df["strain_id"].isin(["1", "3", "100])]
+
+# Pass a tuple containing ("A", "B") to check for either prefix
+filtered_df = df[df["strain_id"].str.startswith(("A", "B"))]
+
+# Select rows where column 'A' is NaN
+missing_a_df = df[df["A"].isna()]
 
 # Filter rows based on multiple criteria
 filtered_df = df[(df["strain_id"] == "STR-001") & (df["starch_type"] == "Wheat")]
@@ -555,9 +665,6 @@ df.loc[10]
 df.iloc[0]    # Returns a Series
 df.head(1)    # Returns a DataFrame
 
-# Select rows where column 'A' is NaN
-missing_a_df = df[df["A"].isna()]
-
 # Use .eq() to assign True/False (can also use | & for multiple conditions)
 df["has_money"] = df["money"].eq("+")
 
@@ -609,13 +716,55 @@ df_customer["customer_id"] = (
 	.str.replace("customer_", "", regex=False)
 	.astype("Int64")
 )
+
+# Remove 0 in the values: STR001 -> STR1
+df = pd.DataFrame({ "strain_id": ["STR001", "STR002"], "yield": [88.5, 91.2] }) df["strain_id"] = df["strain_id"].str.replace("0", "")
+
+
+```
+
+Fill/Replace NA with a value
+```python
+# Fill all missing (NaN) values in the yield column with 0
+df["column"] = df["column"].fillna(0)
 ```
 
 ### Count
 ```python
 # Count unique items in the strain_id column
 unique_count = df["strain_id"].nunique()
+
+# Count the rows
+row_count = len(df)
+
+# Count the rows or columns
+# df.shape() returns a tuple of (rows, columns)
+row_count = df.shape[0]
+column_count = df.shape[1]
+
+# Count by group
+# dropna=False: keep NA as a group
+COMBO_COLS = [
+	"soil",
+	"crop",
+	"product"
+]
+counts = (
+	df.value_counts(subset=COMBO_COLS, dropna=False).reset_index(name="n") 
+)
 ```
+
+### Extraction
+Extracts the master list of valid categories
+```python
+# 1. Create a column and convert it to the "category" data type
+df = pd.DataFrame({"soil": ["Clay", "Silt", "Sand", "Clay"]})
+df["soil"] = df["soil"].astype("category")
+# 2. Extract the categories
+SOILS = df["soil"].cat.categories
+```
+
+
 
 ### Rounding
 ```python
@@ -626,28 +775,82 @@ df[["value_1", "value_2"]] = df[["value_1", "value_2"]].round(2)
 df = df.round({"value_1": 2, "value_2": 1})
 ```
 
+### Change data type
+```python
+# =====================================================================
+# 1. STANDARD NUMERIC TYPES
+# Fast, but will crash if the column contains missing values (NaN)
+# =====================================================================
+
+df["my_column"] = df["my_column"].astype(int)       # Standard whole numbers
+df["my_column"] = df["my_column"].astype("int64")   # Exact same as above
+df["my_column"] = df["my_column"].astype("int32")   # Smaller integer (uses less memory)
+
+df["my_column"] = df["my_column"].astype(float)     # Standard decimals
+df["my_column"] = df["my_column"].astype("float64") # Exact same as above
+df["my_column"] = df["my_column"].astype("float32") # Smaller decimal (uses less memory)
+
+
+# =====================================================================
+# 2. NULLABLE NUMERIC TYPES (NaN-Safe)
+# Use these if your column contains missing values. Note the capitals!
+# =====================================================================
+
+df["my_column"] = df["my_column"].astype("Int64")   # Integers that allow missing values (<NA>)
+df["my_column"] = df["my_column"].astype("Float64") # Decimals that allow missing values (<NA>)
+
+
+# =====================================================================
+# 3. TEXT AND CATEGORICAL TYPES
+# =====================================================================
+
+df["my_column"] = df["my_column"].astype(str)        # Traditional way to store text
+df["my_column"] = df["my_column"].astype("object")   # Exact same as above
+df["my_column"] = df["my_column"].astype("string")   # Newer Pandas-specific text type
+
+# Highly memory-efficient for columns with few repeating values (e.g., "Male", "Female")
+df["my_column"] = df["my_column"].astype("category") 
+
+
+# =====================================================================
+# 4. BOOLEANS AND DATES
+# =====================================================================
+
+df["my_column"] = df["my_column"].astype(bool)             # True/False (Crashes on missing values)
+df["my_column"] = df["my_column"].astype("boolean")        # True/False that allows missing values (<NA>)
+
+# Converts strings like "2023-01-01" into actual Timestamp objects
+df["my_column"] = df["my_column"].astype("datetime64[ns]") 
+
+# Represents durations or differences between two times
+df["my_column"] = df["my_column"].astype("timedelta64[ns]")
+```
+
+
+### min or max
+```python
+# `ncols or n_plots` handles None or 0
+min(ncols or n_plots, n_plots)
+```
+
+| **ncols** | **n_plots** | **ncols or n_plots** | **Final Result (min)** | **Grid Layout**                       |
+| --------- | ----------- | -------------------- | ---------------------- | ------------------------------------- |
+| `None`    | `3`         | `3`                  | **`3`**                | 1 row × 3 cols                        |
+| `2`       | `5`         | `2`                  | **`2`**                | 3 rows × 2 cols                       |
+| `4`       | `2`         | `4`                  | **`2`**                | 1 row × 2 cols (avoids empty columns) |
+
+### Export files
+```python
+# Export a CSV file
+df.to_csv("my_data.csv", index=False)
+```
+
 ## Statistics (NumPy)
 
+### Calculation
 ```python
-# Creates a random number generator object in NumPy, initialized with a seed of 42
-RNG = np.random.default_rng(42)
-
-# RNG uses NumPy's modern Generator object (e.g. RNG = np.random.default_rng()),
-# Generates a random decimal number between 0.0 (inclusive) and 1.0 (exclusive)
-RNG.random()
-
-# Generates a single random number from a normal (bell curve) distribution.
-# which is faster and statistically superior to the older np.random.normal().
-RNG.normal(mean_value, sd)
-
-# Generates a single random number from a Uniform Distribution (flat probability) —
-# every number in that range has an equal chance of being picked.
-RNG.uniform(min_value, max_value)
-
-# Randomly pick elements from a list, array, or sequence
-RNG.choice(a, size=None, replace=True, p=None)
-strains = ["STR-A", "STR-B", "STR-C", "STR-D"]
-chosen = RNG.choice(strains)
+# Round up into an integer
+math.ceil(n_plots / ncols)
 ```
 
 ### Summary Tables (groupby)
@@ -926,3 +1129,4 @@ plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 plt.axis("off") # hide the axis ticks
 plt.show()
 ```
+

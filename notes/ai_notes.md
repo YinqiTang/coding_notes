@@ -10,6 +10,37 @@ _Merged from `claude_notes.txt` and `LLM_notes.txt`._
 
 ---
 
+## Claude Code
+### How to control Claude Code's access to certain data and scripts
+
+Modify `.claude/settings.local.json` in the project folder: 
+- Add deny rules in the `permissions`
+- Enable `sandbox`. It seems `sandbox` only works in Mac and Linux (need to check).
+
+But `.claude/settings.local.json` in the project folder is in the list of .gitignore now. If we want to ensure all team members use the same setting, we should do:
+- **Move to `.claude/settings.json`:** the `deny` rules, `disableBypassPermissionsMode` and the `sandbox` block. These are team-wide safety rules.
+- **Keep in `settings.local.json`:** anything personal, like your `Bash(python3 -c ' *)` allow rule.
+
+#### Example:
+Deny rules:
+https://github.com/harrisonzhu508/d3a_agentic_demo/blob/main/demo/.claude/settings.json
+
+```
+  "permissions": {
+    "deny": [
+      "Read(../dataset/**)",
+      "Read(**/dataset_script.ipynb)",
+      "Read(./checks/split.py)",
+      "Edit(./config/**)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard *)",
+      "Bash(rm -rf *)"
+    ]
+  },
+```
+
+
 ## Claude Code CLI
 
 Useful commands to know once you're up and running, in the terminal:
@@ -53,7 +84,16 @@ Typical flow when using the AI in the terminal:
 3. Periodically ask for a health check:
    > Please lint wiki
 
+
+# Local AI
+
 ## Learning Materials
+
+**Explain hardware and mechanisms:**
+[Local AI Explained: The Full Beginner Course](https://www.youtube.com/watch?v=VpT5qgkP2cU)
+Notes: check computer capacity, LM Studio as engine, Pi as harness
+
+**Others:**
 Harvard: [CS2680 Modern AI Systems: Agents and System Optimizations]([CS2680 Modern AI Systems: Agents and System Optimizations](https://cs2680.com/))
 
 [Andrej Karpathy - YouTube](https://www.youtube.com/@AndrejKarpathy/videos)
